@@ -28,4 +28,11 @@ class HomeController extends AbstractController
         ]);
     }
 
+    public function end(): Response
+    {
+        return $this->render('home/start.html.twig', [
+            'controller_name' => 'HomeController',
+        ]);
+    }
+
 }
