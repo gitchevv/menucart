@@ -98,11 +98,11 @@ class DishController extends AbstractController
     /**
      * @Route("/show/{id}", name="show")
      */
-    public function show(Dish $dish)
+    public function show($id,DishRepository $dish)
     {
-//        return $dish->getName();
+        $dr = $dish->find($id);
         return $this->render('dish/show.html.twig', [
-            'dish' => $dish
+            'dish' => $dr
         ]);
     }
 }
