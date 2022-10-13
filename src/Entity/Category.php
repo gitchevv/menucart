@@ -80,4 +80,9 @@ class Category
 
         return $this;
     }
+    // display objects as strings (e.g category as dropdown list in front-end)
+    public function __toString()
+    {
+        return $this->Name;
+    }
 }
