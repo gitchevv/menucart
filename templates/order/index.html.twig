@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello OrderController!{% endblock %}
+
+{% block body %}
+
+
+    {% set sum = 0 %}
+    <br>
+    <div class="container">
+        <h2>Order</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Order Nr.</td>
+                    <td>Name</td>
+                    <td>Price</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                {% set sum = sum + order.price %}
+                    <tr>
+                        <td>{{ order.odernr }}</td>
+                        <td>{{ order.name}}</td>
+                        <td>{{ order.price }} EUR</td>
+                        <td>{{ order.status }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ order.status }}
+                                </a>
+
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ path('status', {id: order.id, status: 'open'}) }}">Open</a></li>
+                                    <li><a class="dropdown-item" href="{{ path('status', {id: order.id, status: 'ready'}) }}">Ready</a></li>
+                                    <li><a class="dropdown-item" href="{{ path('status', {id: order.id, status: 'archive'}) }}">Archive</a></li>
+                                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                                    <li><a class="dropdown-item" href="{{ path('delete', {id: order.id} ) }}">Delete</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            <td></td><td></td>
+            <td>{{ sum }} EUR</td>
+            <td></td>
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}
