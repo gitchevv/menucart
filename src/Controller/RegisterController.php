@@ -16,14 +16,15 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegisterController extends AbstractController
 {
     /**
      * @Route("/register", name="app_register")
      */
-    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, ManagerRegistry $doctrine)
-    {
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, ManagerRegistry $doctrine, ValidatorInterface $validator)
+    { 
 
         $regForm = $this->createFormBuilder()
             ->add('username', TextType::class, ['label' => 'Employee'])
@@ -40,24 +41,35 @@ class RegisterController extends AbstractController
         $regForm->handleRequest($request);
 
         if($regForm->isSubmitted()) {
+
             $input = $regForm->getData();
 
             $user = new User();
             $user->setUsername($input['username']);
-            $user->setPassword(
-                $passwordHasher->hashPassword($user ,$input['password'])
-            );
+            $user->setPassword( $passwordHasher->hashPassword($user, $input['password']) );
 
-            $em = $doctrine->getManager();
-            $em->persist($user);
-            $em->flush();
+            $user->setRawPassword();
+            $errors = $validator->validate($user);
 
-//            dump($input);
+            if( count($errors) > 0 ) {
+                
+                return $this->render('register/index.html.twig', [
+                    'regform' => $regForm->createView(),
+                    'errors' => $errors
+                ]);
+        
+            } else {
+                $em = $doctrine->getManager();
+                $em->persist($user);
+                $em->flush();
+            };
+
             return $this->redirect($this->generateUrl('app_home'));
         }
 
         return $this->render('register/index.html.twig', [
-                    'regform' => $regForm->createView()
+                    'regform' => $regForm->createView(),
+                    'errors' => null
         ]);
     }
 }

@@ -14,11 +14,10 @@ class HomeController extends AbstractController
      */
     public function index(DishRepository $gr): Response
     {
+
         $dishes = $gr->findAll();
         $random_dishes = array_rand($dishes, 2);
 
-//        dump($random_dishes);
-//        dd($random_dishes[1]);
 
         return $this->render('home/index.html.twig', [
             'dish1' => $dishes[$random_dishes[0]],
